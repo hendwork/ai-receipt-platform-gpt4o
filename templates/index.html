@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Receipt Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f0 50%, #ffffff 100%);
+            color: #1a1a1a;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 127, 0, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 87, 34, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff7f00 0%, #ff5722 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666666;
+            font-weight: 300;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 127, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(255, 127, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out;
+        }b0b0;
+            font-weight: 300;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 127, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(255, 127, 0, 0.2);
+            border-color: rgba(255, 127, 0, 0.4);
+        }
+
+        .card-header {
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* File Upload */
+        .upload-area {
+            border: 2px dashed rgba(255, 127, 0, 0.3);
+            border-radius: 16px;
+            padding: 50px 20px;
+            text-align: center;
+            background: rgba(255, 127, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(255, 127, 0, 0.6);
+            background: rgba(255, 127, 0, 0.1);
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #999999;
+        }
+
+        /* Input Field */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 18px 24px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 127, 0, 0.3);
+            border-radius: 12px;
+            color: #1a1a1a;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff7f00;
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 0 0 4px rgba(255, 127, 0, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: #999999;
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 18px 36px;
+            background: linear-gradient(135deg, #ff7f00 0%, #ff5722 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(255, 127, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(255, 127, 0, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Response Box */
+        .response-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(255, 127, 0, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #ff7f00;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .response-box.show {
+            display: block;
+        }
+
+        .response-content {
+            color: #333333;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 127, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff7f00;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .glass-card {
+                padding: 25px;
+            }
+
+            .card-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Success/Error States */
+        .success {
+            border-left-color: #4caf50;
+        }
+
+        .error {
+            border-left-color: #f44336;
+        }
+
+        .filename-display {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 127, 0, 0.1);
+            border-radius: 8px;
+            color: #ff7f00;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .filename-display.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Receipt Assistant</h1>
+            <p class="subtitle">Powered by GPT-4o Vision - Analisis Struk Belanja dengan Kecerdasan Buatan</p>
+        </header>
+
+        <div class="glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Upload Struk Belanja</h2>
+            </div>
+
+            <form id="uploadForm">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-text">Klik atau drag & drop struk belanja Anda</div>
+                    <div class="upload-hint">Format: JPG, PNG, atau foto struk lainnya</div>
+                    <input type="file" name="receipt" id="receiptFile" accept="image/*" required>
+                </div>
+                <div class="filename-display" id="filenameDisplay"></div>
+                <button type="submit" class="btn"><span>Analisis dengan AI</span></button>
+            </form>
+
+            <div class="response-box" id="responseBox">
+                <div class="response-content" id="responseContent"></div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Tanya AI Assistant</h2>
+            </div>
+
+            <form id="askForm">
+                <div class="input-wrapper">
+                    <input type="text" id="question" placeholder="Contoh: Apa saja makanan yang saya beli kemarin?" required>
+                </div>
+                <button type="submit" class="btn"><span>Tanya AI Sekarang</span></button>
+            </form>
+
+            <div class="response-box" id="answerBox">
+                <div class="response-content" id="answerContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // File upload handling
+        const receiptFile = document.getElementById('receiptFile');
+        const uploadArea = document.getElementById('uploadArea');
+        const filenameDisplay = document.getElementById('filenameDisplay');
+
+        receiptFile.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const filename = e.target.files[0].name;
+                filenameDisplay.textContent = `✓ File terpilih: ${filename}`;
+                filenameDisplay.classList.add('show');
+                uploadArea.style.borderColor = 'rgba(255, 127, 0, 0.6)';
+                uploadArea.style.background = 'rgba(255, 127, 0, 0.1)';
+            }
+        });
+
+        // Upload form
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('receipt', receiptFile.files[0]);
+            
+            const responseBox = document.getElementById('responseBox');
+            const responseContent = document.getElementById('responseContent');
+            
+            responseBox.classList.add('show');
+            responseContent.innerHTML = '<div class="loading"></div> Mengirim gambar ke GPT-4o untuk dianalisis...';
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    responseBox.classList.add('success');
+                    responseContent.innerHTML = `<strong>✅ Sukses!</strong> GPT-4o berhasil mengekstrak data berikut:\n\n${JSON.stringify(result.data, null, 2)}`;
+                } else {
+                    responseBox.classList.add('error');
+                    responseContent.textContent = `❌ Error: ${result.error}`;
+                }
+            } catch (error) {
+                responseBox.classList.add('error');
+                responseContent.textContent = `❌ Error: ${error.message}`;
+            }
+        });
+
+        // Ask form
+        document.getElementById('askForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const question = document.getElementById('question').value;
+            const answerBox = document.getElementById('answerBox');
+            const answerContent = document.getElementById('answerContent');
+            
+            answerBox.classList.add('show');
+            answerContent.innerHTML = '<div class="loading"></div> Mengirim pertanyaan ke GPT-4o...';
+            
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    answerBox.classList.add('success');
+                    answerContent.textContent = result.answer;
+                } else {
+                    answerBox.classList.add('error');
+                    answerContent.textContent = `❌ Error: ${result.error}`;
+                }
+            } catch (error) {
+                answerBox.classList.add('error');
+                answerContent.textContent = `❌ Error: ${error.message}`;
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'rgba(255, 127, 0, 0.8)';
+            uploadArea.style.background = 'rgba(255, 127, 0, 0.15)';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = 'rgba(255, 127, 0, 0.3)';
+            uploadArea.style.background = 'rgba(255, 127, 0, 0.05)';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'rgba(255, 127, 0, 0.3)';
+            uploadArea.style.background = 'rgba(255, 127, 0, 0.05)';
+            
+            if (e.dataTransfer.files.length > 0) {
+                receiptFile.files = e.dataTransfer.files;
+                const filename = e.dataTransfer.files[0].name;
+                filenameDisplay.textContent = `✓ File terpilih: ${filename}`;
+                filenameDisplay.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>

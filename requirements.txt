@@ -1,0 +1,7 @@
+flask
+numpy
+sentence-transformers
+torch
+python-dotenv
+openai
+Pillow
