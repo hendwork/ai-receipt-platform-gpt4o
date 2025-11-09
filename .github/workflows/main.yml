@@ -1,0 +1,41 @@
+# Nama workflow yang akan muncul di tab "Actions" GitHub
+name: Build and Push Docker Image
+
+# Pemicu: Jalankan workflow ini setiap kali ada 'push' ke branch 'main'
+on:
+  push:
+    branches: [ "main" ]
+
+# Daftar pekerjaan yang akan dilakukan
+jobs:
+  build-and-push:
+    # Jalankan pekerjaan ini di server virtual Ubuntu
+    runs-on: ubuntu-latest
+    
+    # Langkah-langkah yang akan dieksekusi
+    steps:
+      # 1. Mengunduh kode Anda dari repositori ke server virtual
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Menyiapkan environment build Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Login ke Docker Hub menggunakan kunci rahasia yang sudah kita siapkan
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4. Membangun image dari Dockerfile dan mengunggahnya ke Docker Hub
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          # Memberi tahu di mana kode berada (direktori saat ini)
+          context: .
+          # Memberi tahu untuk benar-benar mengunggah (push) setelah build
+          push: true
+          # Memberi nama image: <username_dockerhub>/<nama_repo>:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ai-receipt-platform-gpt4o:latest
